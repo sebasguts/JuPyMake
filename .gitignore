@@ -1,0 +1,5 @@
+build/*
+*so
+issues
+dist/*
+MANIFEST
