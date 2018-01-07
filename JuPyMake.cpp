@@ -34,7 +34,7 @@ static PyObject * ToPyBool( bool input )
 /*
  * Python functions
  */
-static PyObject * RunPolymakeCommand( PyObject* self, PyObject* args )
+static PyObject * ExecuteCommand( PyObject* self, PyObject* args )
 {
     const char * input_string;
     if (! PyArg_ParseTuple(args, "s", &input_string) )
@@ -56,7 +56,7 @@ static PyObject * RunPolymakeCommand( PyObject* self, PyObject* args )
     return PyTuple_Pack( 4, ToPyBool( exception ), ToPyBool( success ), to_python_string( output.c_str() ), to_python_string( error.c_str() ) );
 }
 
-static PyObject * GetPolymakeCompletion( PyObject* self, PyObject* args )
+static PyObject * GetCompletion( PyObject* self, PyObject* args )
 {
     const char* input_string;
     if (! PyArg_ParseTuple(args, "s", &input_string) )
@@ -139,9 +139,9 @@ static PyObject * error_out(PyObject *m) {
 }
 
 static PyMethodDef JuPyMakeMethods[] = {
-    {"RunPolymakeCommand",(PyCFunction)RunPolymakeCommand, METH_VARARGS,
+    {"ExecuteCommand",(PyCFunction)ExecuteCommand, METH_VARARGS,
      "Runs a polymake command"},
-    {"GetPolymakeCompletion",(PyCFunction)GetPolymakeCompletion, METH_VARARGS,
+    {"GetCompletion",(PyCFunction)GetCompletion, METH_VARARGS,
      "Get tab completions of string"},
     {"GetContextHelp",(PyCFunction)GetContextHelp,METH_VARARGS | METH_KEYWORDS,
       "Get context help of string"},

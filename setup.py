@@ -17,7 +17,7 @@ polymake_ldflags += [ "-lpolymake" ]
 
 setup(
     name = 'JuPyMake',
-    version = '0.0.1',
+    version = '0.1',
     description = 'A simple interface to Polymake',
     author = 'Sebastian Gutsche',
     author_email = 'sebastian.gutsche@gmail.com',
