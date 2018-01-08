@@ -40,20 +40,16 @@ static PyObject * ExecuteCommand( PyObject* self, PyObject* args )
     if (! PyArg_ParseTuple(args, "s", &input_string) )
         return NULL;
     std::string polymake_input(input_string);
-    bool exception;
     bool success;
     std::string output;
     std::string error;
     try{
-      std::tie(success,output,error) = main_polymake_session->shell_execute(polymake_input);
-      exception = false;
+        std::tie(success,output,error) = main_polymake_session->shell_execute(polymake_input);
     }catch(const std::exception& e ){
-      exception = true;
-      success = false;
-      error = e.what();
-      output = "";
+        PyErr_SetString( JuPyMakeError, e.what() );
+        return NULL;
     }
-    return PyTuple_Pack( 4, ToPyBool( exception ), ToPyBool( success ), to_python_string( output.c_str() ), to_python_string( error.c_str() ) );
+    return PyTuple_Pack( 3, ToPyBool( success ), to_python_string( output.c_str() ), to_python_string( error.c_str() ) );
 }
 
 static PyObject * GetCompletion( PyObject* self, PyObject* args )

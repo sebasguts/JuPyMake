@@ -9,7 +9,27 @@ Install via
 ```
 python setup.py install
 ```
-Currently, the `polymake-config` command must be available from the config.
+Currently, the `polymake-config` command must be executable.
+
+## Example
+
+```
+>>> import JuPyMake
+>>> JuPyMake.InitializePolymake()
+True
+>>> JuPyMake.ExecuteCommand("$p=cube(3);")
+(True, '', '')
+>>> JuPyMake.ExecuteCommand("print $p->VERTICES;")
+(True, '1 -1 -1 -1\n1 1 -1 -1\n1 -1 1 -1\n1 1 1 -1\n1 -1 -1 1\n1 1 -1 1\n1 -1 1 1\n1 1 1 1\n', '')
+>>> JuPyMake.GetCompletion("cube");
+['cube']
+>>> JuPyMake.GetCompletion("cu");
+['cube', 'cuboctahedron']
+>>> JuPyMake.GetContextHelp(input="cube")
+['cube<Scalar>(d; x_up, x_low, Options) -> Polytope<Scalar>\n\nOptions: group character_table\n\n']
+>>> JuPyMake.GetContextHelp(input="cube",full=True);
+... output omitted ...
+```
 
 ## Notes
 
