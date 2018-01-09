@@ -12,9 +12,9 @@ else:
 if sys.version_info < (3,0):
     FileNotFoundError = OSError
 
-polymake_cflags = [ subprocess.check_output( [ "polymake-config", "--cflags" ] ).strip().decode( 'utf-8' ) ]
-polymake_cflags += [ subprocess.check_output( [ "polymake-config", "--includes" ] ).strip().decode( 'utf-8' ) ]
-polymake_ldflags = [ subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip().decode( 'utf-8' ) ]
+polymake_cflags = subprocess.check_output( [ "polymake-config", "--cflags" ] ).strip().decode( 'utf-8' ).split(' ')
+polymake_cflags += subprocess.check_output( [ "polymake-config", "--includes" ] ).strip().decode( 'utf-8' ).split(' ')
+polymake_ldflags = subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip().decode( 'utf-8' ).split(' ')
 polymake_ldflags += [ "-lpolymake" ]
 
 polymake_cc = subprocess.check_output( [ "polymake-config", "--cc" ] ).strip().decode( 'utf-8' )
