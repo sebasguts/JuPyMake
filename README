@@ -22,9 +22,9 @@ True
 >>> JuPyMake.ExecuteCommand("print $p->VERTICES;")
 (True, '1 -1 -1 -1\n1 1 -1 -1\n1 -1 1 -1\n1 1 1 -1\n1 -1 -1 1\n1 1 -1 1\n1 -1 1 1\n1 1 1 1\n', '')
 >>> JuPyMake.GetCompletion("cube");
-['cube']
+(4, '<', ['cube'])
 >>> JuPyMake.GetCompletion("cu");
-['cube', 'cuboctahedron']
+(2, '<', ['cube', 'cuboctahedron'])
 >>> JuPyMake.GetContextHelp(input="cube")
 ['cube<Scalar>(d; x_up, x_low, Options) -> Polytope<Scalar>\n\nOptions: group character_table\n\n']
 >>> JuPyMake.GetContextHelp(input="cube",full=True);

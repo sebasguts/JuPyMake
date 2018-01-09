@@ -20,6 +20,12 @@ using std::endl;
 #define to_python_string(o) PyString_FromString(const_cast<char*>(o))
 #endif
 
+#if PY_MAJOR_VERSION >= 3
+#define char_to_python_string(o) PyUnicode_FromString(std::string(1,o).c_str())
+#else
+#define char_to_python_string(o) PyString_FromString(std::string(1,o).c_str())
+#endif
+
 polymake::Main* main_polymake_session;
 PyObject* JuPyMakeError;
 
@@ -59,8 +65,10 @@ static PyObject * GetCompletion( PyObject* self, PyObject* args )
         return NULL;
     std::string polymake_input(input_string);
     std::vector<std::string> completions;
+    int completion_offset;
+    char additional_character;
     try{
-        completions = main_polymake_session->shell_complete(polymake_input);
+        std::tie(completion_offset,additional_character, completions) = main_polymake_session->shell_complete(polymake_input);
     }catch(const std::exception& e ){
          PyErr_SetString( JuPyMakeError, e.what() );
          return NULL;
@@ -70,7 +78,7 @@ static PyObject * GetCompletion( PyObject* self, PyObject* args )
     for(int i=0;i<completions_length;i++){
         PyList_SetItem( return_list, i, to_python_string( completions[ i ].c_str() ) );
     }
-    return return_list;
+    return PyTuple_Pack( 3, PyLong_FromLong( completion_offset ), char_to_python_string(additional_character), return_list );
 }
 
 static PyObject * GetContextHelp( PyObject* self, PyObject* args, PyObject* kwargs )
