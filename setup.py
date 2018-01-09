@@ -2,6 +2,8 @@ from distutils.core import setup, Extension
 import sys
 import subprocess
 
+import os
+
 if sys.version_info < (3,5):
     macro_list = [ ( "PYTHON_VERSION_OLDER_THREE_FIVE", "1" ) ]
 else:
@@ -15,9 +17,13 @@ polymake_cflags += [ subprocess.check_output( [ "polymake-config", "--includes" 
 polymake_ldflags = [ subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip().decode( 'utf-8' ) ]
 polymake_ldflags += [ "-lpolymake" ]
 
+polymake_cc = subprocess.check_output( [ "polymake-config", "--cc" ] ).strip().decode( 'utf-8' )
+os.environ["CC"] = polymake_cc
+os.environ["CXX"] = polymake_cc
+
 setup(
     name = 'JuPyMake',
-    version = '0.3',
+    version = '0.4',
     description = 'A simple interface to Polymake',
     author = 'Sebastian Gutsche',
     author_email = 'sebastian.gutsche@gmail.com',
