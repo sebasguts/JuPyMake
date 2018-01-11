@@ -20,7 +20,7 @@ True
 >>> JuPyMake.ExecuteCommand("$p=cube(3);")
 (True, '', '')
 >>> JuPyMake.ExecuteCommand("print $p->VERTICES;")
-(True, '1 -1 -1 -1\n1 1 -1 -1\n1 -1 1 -1\n1 1 1 -1\n1 -1 -1 1\n1 1 -1 1\n1 -1 1 1\n1 1 1 1\n', '')
+(True, '1 -1 -1 -1\n1 1 -1 -1\n1 -1 1 -1\n1 1 1 -1\n1 -1 -1 1\n1 1 -1 1\n1 -1 1 1\n1 1 1 1\n', '', '')
 >>> JuPyMake.GetCompletion("cube");
 (4, '<', ['cube'])
 >>> JuPyMake.GetCompletion("cu");
