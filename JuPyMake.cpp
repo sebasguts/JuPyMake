@@ -86,8 +86,8 @@ static PyObject * GetContextHelp( PyObject* self, PyObject* args, PyObject* kwar
 {
     const char* input_string;
     int position = -1;
-    bool full=false;
-    bool html=false;
+    int full=false;
+    int html=false;
     static char* kwlist[] = { "input", "position", "full", "html", NULL};
     if (! PyArg_ParseTupleAndKeywords(args, kwargs, "s|ipp", kwlist, &input_string, &position, &full, &html ) )
         return NULL;
@@ -97,7 +97,7 @@ static PyObject * GetContextHelp( PyObject* self, PyObject* args, PyObject* kwar
     }
     std::vector<std::string> results;
     try{
-        results = main_polymake_session->shell_context_help(polymake_input,position,full,html);
+        results = main_polymake_session->shell_context_help(polymake_input,position,static_cast<bool>(full),static_cast<bool>(html));
     }catch(const std::exception& e ){
         PyErr_SetString( JuPyMakeError, e.what() );
         return NULL;

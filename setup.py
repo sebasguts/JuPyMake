@@ -23,7 +23,7 @@ os.environ["CXX"] = polymake_cc
 
 setup(
     name = 'JuPyMake',
-    version = '0.5',
+    version = '0.6',
     description = 'A simple interface to Polymake',
     author = 'Sebastian Gutsche',
     author_email = 'sebastian.gutsche@gmail.com',
