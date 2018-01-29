@@ -89,7 +89,7 @@ static PyObject * GetContextHelp( PyObject* self, PyObject* args, PyObject* kwar
     int full=false;
     int html=false;
     static char* kwlist[] = { "input", "position", "full", "html", NULL};
-    if (! PyArg_ParseTupleAndKeywords(args, kwargs, "s|ipp", kwlist, &input_string, &position, &full, &html ) )
+    if (! PyArg_ParseTupleAndKeywords(args, kwargs, "s|iii", kwlist, &input_string, &position, &full, &html ) )
         return NULL;
     std::string polymake_input(input_string);
     if(position == -1){
