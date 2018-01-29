@@ -12,18 +12,23 @@ else:
 if sys.version_info < (3,0):
     FileNotFoundError = OSError
 
-polymake_cflags = subprocess.check_output( [ "polymake-config", "--cflags" ] ).strip().decode( 'utf-8' ).split(' ')
-polymake_cflags += subprocess.check_output( [ "polymake-config", "--includes" ] ).strip().decode( 'utf-8' ).split(' ')
-polymake_ldflags = subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip().decode( 'utf-8' ).split(' ')
+def conditional_decode( string ):
+  if sys.version_info < (3,5):
+      return string
+  return string.decode( 'utf-8' )
+
+polymake_cflags = conditional_decode( subprocess.check_output( [ "polymake-config", "--cflags" ] ).strip() ).split(' ')
+polymake_cflags += conditional_decode( subprocess.check_output( [ "polymake-config", "--includes" ] ).strip() ).split(' ')
+polymake_ldflags = conditional_decode( subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip() ).split(' ')
 polymake_ldflags += [ "-lpolymake" ]
 
-polymake_cc = subprocess.check_output( [ "polymake-config", "--cc" ] ).strip().decode( 'utf-8' )
+polymake_cc = conditional_decode( subprocess.check_output( [ "polymake-config", "--cc" ] ).strip() )
 os.environ["CC"] = polymake_cc
 os.environ["CXX"] = polymake_cc
 
 setup(
     name = 'JuPyMake',
-    version = '0.6',
+    version = '0.7',
     description = 'A simple interface to Polymake',
     author = 'Sebastian Gutsche',
     author_email = 'sebastian.gutsche@gmail.com',
