@@ -31,10 +31,9 @@ PyObject* JuPyMakeError;
 
 static PyObject * ToPyBool( bool input )
 {
-    if(input){
-      return Py_True;
-    }
-    return Py_False;
+    if(input)
+        Py_RETURN_TRUE;
+    Py_RETURN_FALSE;
 }
 
 /*
@@ -120,7 +119,7 @@ static PyObject * InitializePolymake( PyObject* self )
         PyErr_SetString( JuPyMakeError, e.what() );
         return NULL;
     }
-    return Py_True;
+    Py_RETURN_TRUE;
 }
 /*
  * Python mixed init stuff
@@ -203,6 +202,7 @@ extern "C" void initJuPyMake(void)
     struct module_state *st = GETSTATE(module);
     JuPyMakeError = PyErr_NewException(const_cast<char*>("JuPyMake.PolymakeError"), NULL, NULL );
     Py_INCREF( JuPyMakeError );
+    st->error = JuPyMakeError;
 
 #if PY_MAJOR_VERSION >= 3
     return module;
