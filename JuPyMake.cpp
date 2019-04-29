@@ -10,6 +10,8 @@ using std::endl;
 #include <polymake/Main.h>
 #include <polymake/Vector.h>
 
+#include <csignal>
+
 /*
  * Python different version stuff
  */
@@ -25,6 +27,27 @@ using std::endl;
 #else
 #define char_to_python_string(o) PyString_FromString(std::string(1,o).c_str())
 #endif
+
+#define SET_SIGNAL_HANDLERS \
+    sigset_t signal_block_set, signal_pending_set; \
+    sigemptyset (&signal_block_set); \
+    sigaddset(&signal_block_set, SIGINT); \
+    sigaddset(&signal_block_set, SIGALRM); \
+    sigprocmask(SIG_BLOCK, &signal_block_set, NULL);
+
+#define RESET_SIGNAL_HANDLERS \
+    sigpending(&signal_pending_set); \
+    if(sigismember(&signal_pending_set,SIGINT)){ \
+        PyOS_sighandler_t current_handler = PyOS_setsig(SIGINT,SIG_IGN); \
+        sigprocmask(SIG_UNBLOCK, &signal_block_set, NULL); \
+        PyOS_setsig(SIGINT,current_handler); \
+        PyErr_SetInterrupt(); \
+        PyErr_CheckSignals(); \
+        return NULL; \
+    }\
+    sigprocmask(SIG_UNBLOCK, &signal_block_set, NULL);
+
+
 
 polymake::Main* main_polymake_session;
 PyObject* JuPyMakeError;
@@ -49,12 +72,15 @@ static PyObject * ExecuteCommand( PyObject* self, PyObject* args )
     std::string stdout;
     std::string stderr;
     std::string error;
+    SET_SIGNAL_HANDLERS
     try{
         std::tie(parsed,stdout,stderr,error) = main_polymake_session->shell_execute(polymake_input);
     }catch(const std::exception& e ){
+        RESET_SIGNAL_HANDLERS
         PyErr_SetString( JuPyMakeError, e.what() );
         return NULL;
     }
+    RESET_SIGNAL_HANDLERS
     return PyTuple_Pack( 4, ToPyBool( parsed ), to_python_string( stdout.c_str() ),  to_python_string( stderr.c_str() ), to_python_string( error.c_str() ) );
 }
 
@@ -67,12 +93,15 @@ static PyObject * GetCompletion( PyObject* self, PyObject* args )
     std::vector<std::string> completions;
     int completion_offset;
     char additional_character;
+    SET_SIGNAL_HANDLERS
     try{
         std::tie(completion_offset,additional_character, completions) = main_polymake_session->shell_complete(polymake_input);
     }catch(const std::exception& e ){
-         PyErr_SetString( JuPyMakeError, e.what() );
-         return NULL;
+        RESET_SIGNAL_HANDLERS
+        PyErr_SetString( JuPyMakeError, e.what() );
+        return NULL;
     }
+    RESET_SIGNAL_HANDLERS
     int completions_length = completions.size();
     PyObject* return_list = PyList_New( completions_length );
     for(int i=0;i<completions_length;i++){
@@ -95,12 +124,15 @@ static PyObject * GetContextHelp( PyObject* self, PyObject* args, PyObject* kwar
         position = static_cast<int>(std::string::npos);
     }
     std::vector<std::string> results;
+    SET_SIGNAL_HANDLERS
     try{
         results = main_polymake_session->shell_context_help(polymake_input,position,static_cast<bool>(full),static_cast<bool>(html));
     }catch(const std::exception& e ){
+        RESET_SIGNAL_HANDLERS
         PyErr_SetString( JuPyMakeError, e.what() );
         return NULL;
     }
+    RESET_SIGNAL_HANDLERS
     int results_length = results.size();
     PyObject* return_list = PyList_New( results_length );
     for(int i=0;i<results_length;i++){
@@ -111,14 +143,17 @@ static PyObject * GetContextHelp( PyObject* self, PyObject* args, PyObject* kwar
 
 static PyObject * InitializePolymake( PyObject* self )
 {
+    SET_SIGNAL_HANDLERS
     try{
         main_polymake_session = new polymake::Main;
         main_polymake_session->shell_enable();
         main_polymake_session->set_application("polytope");
     }catch(const std::exception& e){
+        RESET_SIGNAL_HANDLERS
         PyErr_SetString( JuPyMakeError, e.what() );
         return NULL;
     }
+    RESET_SIGNAL_HANDLERS
     Py_RETURN_TRUE;
 }
 /*
@@ -135,12 +170,6 @@ struct module_state {
 #define GETSTATE(m) (&_state)
 static struct module_state _state;
 #endif
-
-static PyObject * error_out(PyObject *m) {
-    struct module_state *st = GETSTATE(m);
-    PyErr_SetString(st->error, "something bad happened");
-    return NULL;
-}
 
 static PyMethodDef JuPyMakeMethods[] = {
     {"ExecuteCommand",(PyCFunction)ExecuteCommand, METH_VARARGS,
