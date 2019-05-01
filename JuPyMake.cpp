@@ -43,6 +43,7 @@ using std::endl;
         PyOS_sighandler_t current_handler = PyOS_setsig(SIGINT, SIG_IGN);    \
         sigprocmask(SIG_UNBLOCK, &signal_block_set, NULL);                   \
         PyOS_setsig(SIGINT, current_handler);                                \
+        PyErr_SetString(PyExc_KeyboardInterrupt, "polymake interrupted");    \
         PyErr_SetInterrupt();                                                \
         PyErr_CheckSignals();                                                \
         return NULL;                                                         \
