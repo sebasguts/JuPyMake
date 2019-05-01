@@ -38,6 +38,7 @@ setup(
     author = 'Sebastian Gutsche',
     author_email = 'sebastian.gutsche@gmail.com',
     url = 'https://github.com/sebasguts/JuPyMake',
+    license = 'GPLv2 or any later version'
     ext_modules= [ Extension( "JuPyMake",
                               [ "JuPyMake.cpp" ],
                               extra_compile_args=polymake_cflags,
