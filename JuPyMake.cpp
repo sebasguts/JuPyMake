@@ -12,7 +12,7 @@ using std::endl;
 
 #include <csignal>
 
-#include <threads.h>
+#include <thread>
 
 /*
  * Python different version stuff
