@@ -12,6 +12,8 @@ using std::endl;
 
 #include <csignal>
 
+#include <threads.h>
+
 /*
  * Python different version stuff
  */
@@ -51,7 +53,10 @@ using std::endl;
     sigprocmask(SIG_UNBLOCK, &signal_block_set, NULL);
 
 
-polymake::Main* main_polymake_session;
+thread_local polymake::Main* main_polymake_session;
+thread_local bool initialized;
+bool shell_enabled;
+
 PyObject*       JuPyMakeError;
 
 static PyObject* ToPyBool(bool input)
@@ -64,8 +69,31 @@ static PyObject* ToPyBool(bool input)
 /*
  * Python functions
  */
+static PyObject* InitializePolymake(PyObject* self)
+{
+    if(!initialized){
+    SET_SIGNAL_HANDLERS
+        try {
+            main_polymake_session = new polymake::Main;
+            initialized = true;
+            if(!shell_enabled){
+                main_polymake_session->shell_enable();
+                main_polymake_session->set_application("polytope");
+            }
+        }
+        catch (const std::exception& e) {
+            RESET_SIGNAL_HANDLERS
+            PyErr_SetString(JuPyMakeError, e.what());
+            return NULL;
+        }
+    RESET_SIGNAL_HANDLERS
+    }
+    Py_RETURN_TRUE;
+}
+
 static PyObject* ExecuteCommand(PyObject* self, PyObject* args)
 {
+    InitializePolymake(NULL);
     const char* input_string;
     if (!PyArg_ParseTuple(args, "s", &input_string))
         return NULL;
@@ -92,6 +120,7 @@ static PyObject* ExecuteCommand(PyObject* self, PyObject* args)
 
 static PyObject* GetCompletion(PyObject* self, PyObject* args)
 {
+    InitializePolymake(NULL);
     const char* input_string;
     if (!PyArg_ParseTuple(args, "s", &input_string))
         return NULL;
@@ -124,6 +153,7 @@ static PyObject* GetCompletion(PyObject* self, PyObject* args)
 static PyObject*
 GetContextHelp(PyObject* self, PyObject* args, PyObject* kwargs)
 {
+    InitializePolymake(NULL);
     const char*  input_string;
     int          position = -1;
     int          full = false;
@@ -157,22 +187,6 @@ GetContextHelp(PyObject* self, PyObject* args, PyObject* kwargs)
     return return_list;
 }
 
-static PyObject* InitializePolymake(PyObject* self)
-{
-    SET_SIGNAL_HANDLERS
-    try {
-        main_polymake_session = new polymake::Main;
-        main_polymake_session->shell_enable();
-        main_polymake_session->set_application("polytope");
-    }
-    catch (const std::exception& e) {
-        RESET_SIGNAL_HANDLERS
-        PyErr_SetString(JuPyMakeError, e.what());
-        return NULL;
-    }
-    RESET_SIGNAL_HANDLERS
-    Py_RETURN_TRUE;
-}
 /*
  * Python mixed init stuff
  */

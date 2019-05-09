@@ -41,7 +41,7 @@ setup(
     license = 'GPLv2 or any later version',
     ext_modules= [ Extension( "JuPyMake",
                               [ "JuPyMake.cpp" ],
-                              extra_compile_args=polymake_cflags,
+                              extra_compile_args=polymake_cflags + [ '-pthread' ],
                               extra_link_args=polymake_ldflags,
                               define_macros = macro_list ) ],
     package_data = { '': [ "COPYING", "GPLv2" ] },
