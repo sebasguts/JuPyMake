@@ -19,9 +19,9 @@ def conditional_decode( string ):
       return string
   return string.decode( 'utf-8' )
 
-polymake_cflags = conditional_decode( subprocess.check_output( [ "polymake-config", "--cflags" ] ).strip() ).split(' ')
-polymake_cflags += conditional_decode( subprocess.check_output( [ "polymake-config", "--includes" ] ).strip() ).split(' ')
-polymake_ldflags = conditional_decode( subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip() ).split(' ')
+polymake_cflags = conditional_decode( subprocess.check_output( [ "polymake-config", "--cflags" ] ).strip() ).split()
+polymake_cflags += conditional_decode( subprocess.check_output( [ "polymake-config", "--includes" ] ).strip() ).split()
+polymake_ldflags = conditional_decode( subprocess.check_output( [ "polymake-config", "--ldflags" ] ).strip() ).split()
 polymake_ldflags += [ "-lpolymake" ]
 
 polymake_cc = conditional_decode( subprocess.check_output( [ "polymake-config", "--cc" ] ).strip() )
